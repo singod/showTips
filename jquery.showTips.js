@@ -24,7 +24,7 @@
 			if(typeof elem == 'string') {
 				if(elem =="show"){
 					jQuery('#tip'+pmr).show();  jQuery("#con"+pmr).html(opts.content);
-					calculate(pointer,jQuery('#tip'+pmr));
+					showPosition(pointer,jQuery('#tip'+pmr));
 					};
 				if(elem =="hide"){jQuery('#tip'+pmr).hide()};
 			};
@@ -34,34 +34,45 @@
 			tipId = jQuery("#tip"+pmr);	
 			conId = jQuery("#con"+pmr);
 			
-			var edgecolor='border-'+opts.alignTo[0]+'-color';
+			var edgecolor='border-'+opts.alignTo[0]+'-color', tfi=tipId.find("i"), tfem=tipId.find("em"), tfiem=tipId.find("i,em");
 			tipId.css({'position':'absolute',border:'1px solid','border-color':opts.color[0],'background-color':opts.color[1]});
 			if(opts.alignTo[1]=='center'){ var offpos=50,percen="%"; }else{ var offpos=5,percen="px"; };
-			tipId.find("i,em").css({width:0,height:0,content:'','position':'absolute'})
-			tipId.find("i").css({border:'8px solid transparent','z-index':5});
-			tipId.find("em").css({border:'7px solid transparent','z-index':10});
-			if(pointer=='top-center' || pointer=='bottom-center' || pointer=='top-left' || pointer=='bottom-left'){
-				var poi="left";
-				if(pointer=='top-center' || pointer=='bottom-center'){
-					tipId.find("i").css({"margin-left":"-8px"});
-					tipId.find("em").css({"margin-left":"-7px"});
-				}
-			}else if(pointer=='left-center' || pointer=='right-center' ||  pointer=='left-top'|| pointer=='right-top'){
-				var poi="top";
-				if(pointer=='left-center' || pointer=='right-center'){
-					tipId.find("i").css({"margin-top":"-8px"});
-					tipId.find("em").css({"margin-top":"-7px"});
-				}
-			}else{
-				var poi="right";
+			tfiem.css({width:0,height:0,content:'','position':'absolute'})
+			tfi.css({border:'8px solid transparent','z-index':5});
+			tfem.css({border:'7px solid transparent','z-index':10});
+			switch (pointer) {
+				case 'top-center':
+				case 'bottom-center':
+				case 'top-left':
+				case 'bottom-left':
+					var poi="left";
+					if(pointer=='top-center' || pointer=='bottom-center'){
+						tfi.css({"margin-left":"-8px"});
+						tfem.css({"margin-left":"-7px"});
+					}
+				    break;
+				case 'left-center':
+				case 'right-center':
+				case 'left-top':
+				case 'right-top':
+					var poi="top";
+					if(pointer=='left-center' || pointer=='right-center'){
+						tfi.css({"margin-top":"-8px"});
+						tfem.css({"margin-top":"-7px"});
+					}
+				    break;
+				default:
+					var poi="right";
+				    break;
 			};
+
 			if(pointer=='follow'){
-				tipId.find("i").css({'border-bottom-color':opts.color[0],left:''+offpos+percen+'',bottom:'100%'});
-				tipId.find("em").css({'border-bottom-color':opts.color[1],left:''+(offpos+(opts.alignTo[1]=='center'?0:1))+percen+'',bottom:'100%'});
+				tfi.css({'border-bottom-color':opts.color[0],left:''+offpos+percen+'',bottom:'100%'});
+				tfem.css({'border-bottom-color':opts.color[1],left:''+(offpos+(opts.alignTo[1]=='center'?0:1))+percen+'',bottom:'100%'});
 			}else{
-				tipId.find("i").css(edgecolor,opts.color[0]).css(poi,''+offpos+percen+'');
-				tipId.find("em").css(edgecolor,opts.color[1]).css(poi,''+(offpos+(opts.alignTo[1]=='center'?0:1))+percen+'');
-				tipId.find("i,em").css(opts.alignTo[0],'100%');
+				tfi.css(edgecolor,opts.color[0]).css(poi,''+offpos+percen+'');
+				tfem.css(edgecolor,opts.color[1]).css(poi,''+(offpos+(opts.alignTo[1]=='center'?0:1))+percen+'');
+				tfiem.css(opts.alignTo[0],'100%');
 			};
 	
 			switch (opts.type) {
@@ -84,7 +95,7 @@
 			}else{
 				tipBox.width(opts.width).height();
 			}		
-            function calculate(pointer,cell){
+            function showPosition(pointer,cell){
 				var selfH = that.outerHeight(true), selfW = that.outerWidth(true);
 				var post=that.offset().top, posl=that.offset().left;
 				var tipCell=(cell=="" || cell==undefined) ? tipId : cell;
@@ -106,11 +117,11 @@
 			}
 			tipBox.hide();
 			switch (opts.trigger){
-				case 'show':calculate(pointer);tipBox.show();break; 
-                case 'click':that.click(function(){calculate(pointer);tipBox.show();});break;
-				case 'hover':that.hover(function(){calculate(pointer);tipBox.show(); tipBox.on("mouseover",function(){jQuery(this).show()}).on("mouseout",function(){jQuery(this).hide()})},function(){tipBox.hide();});break;
-				case 'focus':that.focus(function(){calculate(pointer);tipBox.show();});  that.blur(function(){tipBox.hide();});break; 	  
-				case 'mouse':that.hover(function(){calculate(pointer);tipBox.show();},function(){tipBox.hide();});break; 
+				case 'show':showPosition(pointer);tipBox.show();break; 
+                case 'click':that.click(function(){showPosition(pointer);tipBox.show();});break;
+				case 'hover':that.hover(function(){showPosition(pointer);tipBox.show(); tipBox.on("mouseover",function(){jQuery(this).show()}).on("mouseout",function(){jQuery(this).hide()})},function(){tipBox.hide();});break;
+				case 'focus':that.focus(function(){showPosition(pointer);tipBox.show();});  that.blur(function(){tipBox.hide();});break; 	  
+				case 'mouse':that.hover(function(){showPosition(pointer);tipBox.show();},function(){tipBox.hide();});break; 
 			};
 			setTimeout(function(){opts.success && opts.success();}, 1);
 		});
